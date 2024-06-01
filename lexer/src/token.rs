@@ -1,6 +1,6 @@
 use std::fmt::{Display, Formatter, Result as FmtResult, Write};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Token {
     // Reserved words
     Program,
