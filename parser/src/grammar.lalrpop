@@ -1,0 +1,104 @@
+use super::ast::*;
+
+grammar;
+
+match {
+    r"\s*" => {},
+    r"//[^\n\r]*[\n\r]*" => {},
+    _
+}
+
+pub StmtList: Vec<Stmt> = {
+    <l:StmtList> ";" <s:Stmt> => {
+        let mut l = l;
+        l.push(*s);
+        l
+    },
+    <l:StmtList> ";" => l,
+    <s:Stmt> => vec![*s],
+}
+
+Stmt: Box<Stmt> = {
+    <s:OpenStmt> => s,
+    <s:ClosedStmt> => s,
+}
+
+OpenStmt: Box<Stmt> = {
+    "if" <e:Expr> "then" <s:ClosedStmt> => Box::new(Stmt::If(e, s)),
+    "if" <e:Expr> "then" <s:OpenStmt> => Box::new(Stmt::If(e, s)),
+    "if" <e:Expr> "then" <s:ClosedStmt> "else" <r:OpenStmt> => Box::new(Stmt::IfElse(e, s, r)),
+    "while" <e:Expr> "do" <s:OpenStmt> => Box::new(Stmt::While(e, s)),
+}
+
+ClosedStmt: Box<Stmt> = {
+    <s:SimpleStmt> => s,
+    "if" <e:Expr> "then" <s:ClosedStmt> "else" <r:ClosedStmt> => Box::new(Stmt::IfElse(e, s, r)),
+    "while" <e:Expr> "do" <s:ClosedStmt> => Box::new(Stmt::While(e, s)),
+}
+
+SimpleStmt: Box<Stmt> = {
+    <i:Id> ":=" <e:Expr> => Box::new(Stmt::Assign(i, e)),
+    "var" <i:IdList> ":" <t:Type> => Box::new(Stmt::VarDecl(i, t)),
+    <b:Block> => Box::new(Stmt::Block(b)),
+    <e:Expr> => Box::new(Stmt::Expr(e)),
+}
+
+Block: Vec<Stmt> = {
+    "begin" <l:StmtList> "end" => l,
+}
+
+Expr: Box<Expr> = {
+    <e:LogicalExpr> => e,
+}
+
+LogicalExpr: Box<Expr> = {
+    <e:RelExpr> => e,
+    "not" <f:Factor> => Box::new(Expr::Not(f)),
+    <e:LogicalExpr> "and" <r:RelExpr> => Box::new(Expr::Op(Opcode::And, e, r)),
+    <e:LogicalExpr> "or" <r:RelExpr> => Box::new(Expr::Op(Opcode::Or, e, r)),
+}
+
+RelExpr: Box<Expr> = {
+    <e:SimpleExpr> => e,
+    <e:SimpleExpr> "=" <s:SimpleExpr> => Box::new(Expr::Op(Opcode::Equal, e, s)),
+    <e:SimpleExpr> "<" <s:SimpleExpr> => Box::new(Expr::Op(Opcode::LessThan, e, s)),
+    <e:SimpleExpr> ">" <s:SimpleExpr> => Box::new(Expr::Op(Opcode::GreaterThan, e, s)),
+}
+
+SimpleExpr: Box<Expr> = {
+    <t:Term> => t,
+    <e:SimpleExpr> "+" <t:Term> => Box::new(Expr::Op(Opcode::Add, e, t)),
+    <e:SimpleExpr> "-" <t:Term> => Box::new(Expr::Op(Opcode::Sub, e, t)),
+}
+
+Term: Box<Expr> = {
+    <f:Factor> => f,
+    <t:Term> "*" <f:Factor> => Box::new(Expr::Op(Opcode::Mul, t, f)),
+}
+
+Factor: Box<Expr> = {
+    "(" <e:Expr> ")" => e,
+    <i:Id> => Box::new(Expr::Id(i)),
+    <n:Num> => Box::new(Expr::Num(n)),
+}
+
+Type: Type = {
+    "integer" => Type::Integer,
+}
+
+IdList: Vec<String> = {
+    <i:Id> "," <l:IdList> => {
+        let mut l = l;
+        l.push(i);
+        l
+    },
+    <i:Id> => vec![i],
+}
+
+Id: String = {
+    r"[a-zA-Z_][a-zA-Z0-9_]*" => <>.to_string(),
+}
+
+Num: u32 = {
+    r"[0-9]+" => <>.parse().unwrap(),
+}

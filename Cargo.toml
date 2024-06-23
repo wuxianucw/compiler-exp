@@ -1,7 +1,10 @@
 [workspace]
 resolver = "2"
-members = ["lexer", "parser", "compiler"]
+members = ["lexer", "parser", "compiler", "syntax_util"]
 
 [workspace.dependencies]
 anyhow = "1.0"
 thiserror = "1.0"
+itertools = "0.13"
+lalrpop = "0.20.2"
+lalrpop-util = { version = "0.20.2", features = ["lexer", "unicode"] }
