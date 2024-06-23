@@ -1,7 +1,7 @@
 use std::{env, fs::read_to_string};
 
-use parser::{ast::Stmt, grammar::StmtListParser};
 use lalrpop_util::ParseError;
+use parser::{ast::Stmt, grammar::StmtListParser};
 
 fn print_stmt(stmt: &Stmt, buf: &mut String) {
     match stmt {

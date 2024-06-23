@@ -377,14 +377,23 @@ fn lr1_item_sets<'a>(
 }
 
 fn has_same_kernel(set1: &HashSet<LR1Item>, set2: &HashSet<LR1Item>) -> bool {
-    let set1 = set1.iter().map(|x| (&x.left, &x.right, &x.pos)).collect::<HashSet<_>>();
-    let set2 = set2.iter().map(|x| (&x.left, &x.right, &x.pos)).collect::<HashSet<_>>();
+    let set1 = set1
+        .iter()
+        .map(|x| (&x.left, &x.right, &x.pos))
+        .collect::<HashSet<_>>();
+    let set2 = set2
+        .iter()
+        .map(|x| (&x.left, &x.right, &x.pos))
+        .collect::<HashSet<_>>();
 
     set1 == set2
 }
 
 #[allow(unused)]
-fn lr1_to_lalr1<'a>(item_sets: &'a [HashSet<LR1Item>], next_states: &'a [HashMap<Symbol, usize>]) -> (Vec<HashSet<LR1Item>>, Vec<HashMap<Symbol, usize>>) {
+fn lr1_to_lalr1<'a>(
+    item_sets: &'a [HashSet<LR1Item>],
+    next_states: &'a [HashMap<Symbol, usize>],
+) -> (Vec<HashSet<LR1Item>>, Vec<HashMap<Symbol, usize>>) {
     let mut should_skip = BTreeSet::new();
     let mut idx = 0;
 
@@ -399,7 +408,10 @@ fn lr1_to_lalr1<'a>(item_sets: &'a [HashSet<LR1Item>], next_states: &'a [HashMap
         }
 
         let mut item_set = item_sets[idx].clone();
-        let mut next_state = next_states[idx].iter().map(|(x, &y)| (x.clone(), y)).collect::<Vec<_>>();
+        let mut next_state = next_states[idx]
+            .iter()
+            .map(|(x, &y)| (x.clone(), y))
+            .collect::<Vec<_>>();
         assert!(id_map.insert(idx, idx).is_none());
         if idx != item_sets.len() - 1 {
             for (j, set2) in item_sets[idx + 1..].iter().enumerate() {

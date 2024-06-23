@@ -1,6 +1,9 @@
 pub mod token;
 
-use std::{io::{BufRead, Bytes, Error as IOError}, iter::FusedIterator};
+use std::{
+    io::{BufRead, Bytes, Error as IOError},
+    iter::FusedIterator,
+};
 
 use thiserror::Error;
 
@@ -84,15 +87,13 @@ impl<R: BufRead> Lexer<R> {
             b'<' => Ok(Some(Token::LessThan)),
             b';' => Ok(Some(Token::Semicolon)),
             b',' => Ok(Some(Token::Comma)),
-            b':' => {
-                match self.current {
-                    Some(b'=') => {
-                        self.advance()?;
-                        Ok(Some(Token::Assign))
-                    }
-                    _ => Ok(Some(Token::Colon)),
+            b':' => match self.current {
+                Some(b'=') => {
+                    self.advance()?;
+                    Ok(Some(Token::Assign))
                 }
-            }
+                _ => Ok(Some(Token::Colon)),
+            },
             x @ b'0'..=b'9' => {
                 let mut num = (x - b'0') as u32;
                 while self.current.is_some_and(|x| x.is_ascii_digit()) {
@@ -104,7 +105,10 @@ impl<R: BufRead> Lexer<R> {
             }
             x @ (b'A'..=b'Z' | b'a'..=b'z' | b'_') => {
                 let mut buf = vec![x];
-                while self.current.is_some_and(|x| x.is_ascii_alphanumeric() || x == b'_') {
+                while self
+                    .current
+                    .is_some_and(|x| x.is_ascii_alphanumeric() || x == b'_')
+                {
                     buf.push(self.current.unwrap());
                     self.advance()?;
                 }
@@ -120,10 +124,10 @@ impl<R: BufRead> Lexer<R> {
                     "else" | "Else" | "ELSE" => Token::Else,
                     "do" | "Do" | "DO" => Token::Do,
                     "while" | "While" | "WHILE" => Token::While,
-                    _ => Token::Id(word)
+                    _ => Token::Id(word),
                 }))
             }
-            x => Err(Error::InvalidByte(x, current_pos))
+            x => Err(Error::InvalidByte(x, current_pos)),
         }
     }
 }
@@ -150,7 +154,10 @@ mod test {
         assert_eq!(lexer.next_token().unwrap(), Some(Token::Program));
         assert_eq!(lexer.next_token().unwrap(), Some(Token::Semicolon));
         assert_eq!(lexer.next_token().unwrap(), Some(Token::Assign));
-        assert_eq!(lexer.next_token().unwrap(), Some(Token::Id("_aaa1_b0".into())));
+        assert_eq!(
+            lexer.next_token().unwrap(),
+            Some(Token::Id("_aaa1_b0".into()))
+        );
         assert_eq!(lexer.next_token().unwrap(), Some(Token::Id("vAr".into())));
         assert_eq!(lexer.next_token().unwrap(), Some(Token::Colon));
         assert_eq!(lexer.next_token().unwrap(), Some(Token::Var));
