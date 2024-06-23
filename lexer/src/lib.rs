@@ -1,6 +1,6 @@
 pub mod token;
 
-use std::io::{BufRead, Bytes, Error as IOError};
+use std::{io::{BufRead, Bytes, Error as IOError}, iter::FusedIterator};
 
 use thiserror::Error;
 
@@ -135,6 +135,8 @@ impl<R: BufRead> Iterator for Lexer<R> {
         self.next_token().transpose()
     }
 }
+
+impl<R: BufRead> FusedIterator for Lexer<R> {}
 
 #[cfg(test)]
 mod test {
