@@ -2,7 +2,17 @@
 
 ## 声明
 
-本仓库包含的实验代码完成于 2024 年 6 月 23 日，除所有 `grammar.rs` 源文件外，均为西安交通大学软件学院 2021 级某同学个人独立完成。所有 `grammar.rs` 源文件均为 [LALRPOP](https://github.com/lalrpop/lalrpop) 生成。对本仓库代码的二次分发、使用和修改应当遵循学术规范。
+本仓库包含的实验代码完成于 2024 年 6 月 23 日，除所有 `grammar.rs` 源文件外，均为西安交通大学软件学院 2021 级某同学个人独立完成。所有 `grammar.rs` 源文件均为 [LALRPOP](https://github.com/lalrpop/lalrpop) 生成。
+
+**对本仓库代码的二次分发、使用和修改应当遵循学术规范。**
+
+该同学已提交的实验报告（共 3 份）SHA256 如下：
+
+```plain
+[1] 98bd6f33ba52ca9cba8f5a0cf1b7fa32e18577385c282155c6b5ac21b49cda07
+[2] 60a4c1f938ed7360bee7c40c500304f0416b3dcf944b7d1a2867bff78c8fd386
+[3] 8575fd9c3dbef71d3aff806763bfa16ba2214a8257b448116a6841d0ab268760
+```
 
 ## 简介
 
